@@ -1,4 +1,4 @@
-import "dotenv/config.js";
+// import "dotenv/config.js";
 import { httpServer } from "./httpServer.js";
 import "./websocketServer.js";
 
