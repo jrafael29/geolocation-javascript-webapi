@@ -1,5 +1,13 @@
 version: "3"
 services: 
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+      - "443:443"
   web-api:
     build: .
     container_name: "web-api"
