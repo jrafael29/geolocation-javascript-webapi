@@ -14,12 +14,15 @@ services:
       - web-api
   certbot:
     image: certbot/certbot
+    container_name: certbot
     command: certonly --webroot --webroot-path=/var/www/html -d joserafael.dev.br -d www.joserafael.dev.br
     volumes:
       - ./certbot:/etc/letsencrypt
       - /var/www/html
     networks:
       - geolocation-server
+    stdin_open: true
+    tty: true
   web-api:
     build: .
     container_name: "web-api"
