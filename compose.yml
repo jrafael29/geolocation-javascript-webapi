@@ -1,28 +1,5 @@
 version: "3"
 services: 
-  nginx:
-    image: nginx:latest
-    container_name: "nginx"
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
-    ports:
-      - "80:80"
-      - "443:443"
-    networks:
-      - geolocation-server
-    depends_on:
-      - web-api
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    command: certonly --webroot --webroot-path=/var/www/html -d joserafael.dev.br -d www.joserafael.dev.br
-    volumes:
-      - ./certbot:/etc/letsencrypt
-      - /var/www/html
-    networks:
-      - geolocation-server
-    stdin_open: true
-    tty: true
   web-api:
     build: .
     container_name: "web-api"
@@ -51,3 +28,4 @@ volumes:
     driver: local
 networks:
   geolocation-server:
+    driver: bridge
