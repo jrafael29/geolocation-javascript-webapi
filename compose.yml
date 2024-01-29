@@ -8,6 +8,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    networks:
+      - geolocation-server
   web-api:
     build: .
     container_name: "web-api"
@@ -20,7 +22,7 @@ services:
     depends_on:
       - redis
     networks:
-      - geolocation-api
+      - geolocation-server
   redis:
     image: redis:7.2-alpine
     container_name: "redis"
@@ -30,10 +32,10 @@ services:
     volumes:
       - redisdata:/data
     networks:
-      - geolocation-api
+      - geolocation-server
 volumes:
   redisdata:
     driver: local
 networks:
-  geolocation-api:
+  geolocation-server:
     driver: bridge
