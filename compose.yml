@@ -31,6 +31,7 @@ services:
       - redisdata:/data
     networks:
       - geolocation-api
+  certbot:
 volumes:
   redisdata:
     driver: local
