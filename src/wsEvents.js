@@ -1,5 +1,6 @@
 import { redisConnection } from "./infra/database/redis.js";
 import { getIdentifierFromToken } from "./utils/index.js";
+import { RedisRepository } from "./infra/repository/RedisRepository.js";
 
 const EVENTS_NAME = {
   updateUserLocation: "update-user-location",
@@ -12,11 +13,13 @@ export function onConnection(socket, io) {
 
 export async function onDisconnect(socket) {
   const token = socket.handshake.auth?.token;
-  await Promise.all([
-    redisConnection.del(token),
-    redisConnection.zrem("users", getIdentifierFromToken(token)),
-  ]);
-  console.log("conexão desconectada:", token);
+  console.log("disconnect", token);
+  const redisRepository = new RedisRepository(redisConnection);
+  await redisRepository.removeToken(token);
+  await redisRepository.removeMember({
+    key: "users",
+    identifier: getIdentifierFromToken(token),
+  });
 }
 
 function onUpdateUserLocation(data) {

@@ -2,51 +2,88 @@ import { Router } from "express";
 
 export const routes = Router();
 import { redisConnection } from "../database/redis.js";
+import { RedisRepository } from "../repository/RedisRepository.js";
 
 export const apiRoutes = Router();
 
-apiRoutes.post("/register-location", async (req, res) => {
+import { ServiceLocation } from "../../domain/entity/ServiceLocation.js";
+
+import { errorResponse, successResponse } from "../../utils/httpResponses.js";
+
+apiRoutes.post("/register-user-location", async (req, res) => {
   const requestBody = req.body;
 
-  const identifier = requestBody.identifier.split(" ").join("-");
-  const latitude = requestBody.lat;
-  const longitude = requestBody.lng;
+  const identifierFromReq = requestBody.identifier;
+  const latFromReq = requestBody.lat;
+  const lngFromReq = requestBody.lng;
   try {
-    if (identifier && latitude && longitude) {
-      await redisConnection.geoadd("users", [longitude, latitude, identifier]);
-      const token = `${
-        process.env.SECRET_KEY
-      }.${identifier}.${new Date().valueOf()}`;
+    const userServiceLocation = new ServiceLocation({
+      lat: latFromReq,
+      lng: lngFromReq,
+      identifier: identifierFromReq,
+      type: "users",
+    });
 
-      await redisConnection.setex(token, 300, JSON.stringify(true));
+    const redisRepository = new RedisRepository(redisConnection);
+    // await redisConnection.geoadd("users", [longitude, latitude, identifier]);
+    await redisRepository.addMember({
+      lat: userServiceLocation.getLat(),
+      lng: userServiceLocation.getLng(),
+      memberName: userServiceLocation.getIdentifier(),
+      key: userServiceLocation.getType(),
+    });
 
-      return res
-        .json({
-          data: {
-            redirect: true,
-            location: "/map",
-            message: "registered with success",
-            token: token,
-          },
-        })
-        .end();
-    }
-    return res
-      .json({
-        data: {
-          error: false,
-          message: "parametros inválidos",
-        },
-      })
-      .end();
+    const token = `${
+      process.env.SECRET_KEY
+    }.${userServiceLocation.getIdentifier()}.${new Date().valueOf()}`;
+
+    await redisRepository.addToken(token);
+
+    const data = {
+      redirect: true,
+      location: "/map",
+      message: "registered with success",
+      token: token,
+    };
+    return successResponse(res, data, 201);
   } catch (error) {
-    return res
-      .json({
-        data: {
-          error: true,
-          message: "internal server error",
-        },
-      })
-      .end();
+    console.log("ERROR:", error);
+    return errorResponse(res, "internal server error");
+  }
+});
+
+apiRoutes.post("/register-service-location", async (req, res) => {
+  const requestBody = req.body;
+
+  const identifierFromReq = requestBody.identifier;
+  const latFromReq = requestBody.lat;
+  const lngFromReq = requestBody.lng;
+  const typeFromReq = requestBody.type;
+  console.log("REquest", requestBody);
+  try {
+    const userServiceLocation = new ServiceLocation({
+      lat: latFromReq,
+      lng: lngFromReq,
+      identifier: identifierFromReq,
+      type: typeFromReq,
+    });
+
+    console.log("userServiceLocation", userServiceLocation);
+
+    const redisRepository = new RedisRepository(redisConnection);
+    // await redisConnection.geoadd("users", [longitude, latitude, identifier]);
+    await redisRepository.addMember({
+      lat: userServiceLocation.getLat(),
+      lng: userServiceLocation.getLng(),
+      memberName: userServiceLocation.getIdentifier(),
+      key: userServiceLocation.getType(),
+    });
+    const data = {
+      message: "service created with success",
+    };
+    return successResponse(res, data, 201);
+  } catch (error) {
+    console.log("DEU RUIM::", error);
+    return errorResponse(res, "internal server error");
   }
 });
