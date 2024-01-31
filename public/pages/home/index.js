@@ -1,9 +1,6 @@
 import { getLocation } from "/shared/location.js";
 import { routes } from "/shared/routes.js";
-
-const storagedKeys = {
-  userLocation: "userLocation",
-};
+import { storagedKeys } from "/shared/storagedKeys.js";
 
 const registerForm = document.querySelector("#registerForm");
 
@@ -52,6 +49,11 @@ function registerListeners() {
     const identifier = formData.get("identifier");
 
     if (identifier) {
+      console.log("identifier", identifier);
+      localStorage.setItem(
+        storagedKeys.userIdentifier,
+        JSON.stringify(identifier)
+      );
       const userLocation = JSON.parse(
         localStorage.getItem(storagedKeys.userLocation)
       );

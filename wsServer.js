@@ -15,9 +15,8 @@ io.use(async function (socket, next) {
 
 io.on("connection", (socket) => {
   onConnection(io, socket);
-  socket.on("disconnect", () => onDisconnect(io, socket));
 });
 
-io.on("user-left", () => {
-  console.log("user left io");
+io.on("desconnectted", (data) => {
+  console.log("desconnectted", data);
 });

@@ -35,6 +35,9 @@ function clearStorage() {
 }
 
 async function mainMapPageScript() {
+  const identifier = JSON.parse(
+    localStorage.getItem(storagedKeys.userIdentifier)
+  );
   clearStorage();
   const userLocation = JSON.parse(localStorage.getItem("userLocation"));
   mapInit(userLocation);
@@ -45,13 +48,23 @@ async function mainMapPageScript() {
   const socket = socketPrivateConnection({
     token: token,
   });
+
   socket.emit("user-join", {
-    identifier: "HEHE",
+    identifier: identifier,
     lat: userLocation.lat,
     lng: userLocation.lng,
   });
   socket.on("disconnect", () => {
-    socket.emit("user-left", true);
+    socket.emit("user-left", userLocation);
+  });
+  socket.on("user-left", (data) => {
+    console.log("user left");
+    // console.log("user has lefted", data);
+    socket.emit("users-location", {
+      identifier: identifier,
+      lat: userLocation.lat,
+      lng: userLocation.lng,
+    });
   });
 
   // document.getElementById("test").addEventListener("click", () => {
