@@ -21,7 +21,7 @@ function mapInit({ lat, lng }) {
   watchLocation(
     (position) => {
       const { latitude, longitude } = position.coords;
-      map.updateSelfMarker({ lat: latitude, lng: longitude });
+      leafletMap.updateSelfMarker({ lat: latitude, lng: longitude });
       console.log("new position:", position);
     },
     (error) => {
