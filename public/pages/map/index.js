@@ -38,7 +38,9 @@ async function mainMapPageScript() {
   const identifier = JSON.parse(
     localStorage.getItem(storagedKeys.userIdentifier)
   );
-  const userLocation = JSON.parse(localStorage.getItem("userLocation"));
+  const userLocation = JSON.parse(
+    localStorage.getItem(storagedKeys.userLocation)
+  );
   if (!userLocation) {
     console.log("userLocation", userLocation);
     throw new Error("ocorreu um erro");
