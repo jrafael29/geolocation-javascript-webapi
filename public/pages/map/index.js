@@ -6,6 +6,8 @@ import { socketPrivateConnection } from "/shared/socketClient.js";
 import { BottomRightSectionComponent } from "/shared/components/on-map/BottomRightSectionComponent.js";
 import { ListUserLocation } from "../../shared/components/on-map/children/ListUserLocation.js";
 
+import { watchLocation } from "/shared/location.js";
+
 function mapInit({ lat, lng }) {
   leafletMap.init({ lat, lng, viewZoom: 15 });
   leafletMap.addSelfMarker({ lat, lng });
@@ -16,16 +18,16 @@ function mapInit({ lat, lng }) {
   //   }, i * 1000); // Cada chamada ocorre após 1 segundo multiplicado pelo índice i
   // }
 
-  // watchLocation(
-  //   (position) => {
-  //     const { latitude, longitude } = position.coords;
-  //     map.updateSelfMarker({ lat: latitude, lng: longitude });
-  //     console.log("new position:", position);
-  //   },
-  //   (error) => {
-  //     console.log("deu ruim:", error);
-  //   }
-  // );
+  watchLocation(
+    (position) => {
+      const { latitude, longitude } = position.coords;
+      map.updateSelfMarker({ lat: latitude, lng: longitude });
+      console.log("new position:", position);
+    },
+    (error) => {
+      console.log("deu ruim:", error);
+    }
+  );
 }
 
 function clearStorage() {
@@ -43,7 +45,7 @@ async function mainMapPageScript() {
   );
   if (!userLocation) {
     console.log("userLocation", userLocation);
-    throw new Error("ocorreu um erro");
+    window.location.href = "/";
   }
   clearStorage();
   mapInit(userLocation);
