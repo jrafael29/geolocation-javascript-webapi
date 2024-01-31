@@ -1,5 +1,5 @@
-export class ServiceLocation {
-  #serviceTypes = ["public-places", "stores", "others"];
+export class UserLocation {
+  #userTypes = ["users"];
   #lat;
   #lng;
   #identifier;
@@ -46,6 +46,6 @@ export class ServiceLocation {
   }
 
   #typeIsValid(type) {
-    return this.#serviceTypes.find((serviceType) => type === serviceType);
+    return this.#userTypes.find((userType) => type === userType);
   }
 }

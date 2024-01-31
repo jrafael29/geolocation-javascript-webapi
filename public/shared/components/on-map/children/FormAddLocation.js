@@ -96,7 +96,7 @@ export class FormAddLocation {
         <div>
           <h6>Cadastre uma localização proximo a você</h4>
           <hr>
-          <form id="form-add-location" action="">
+          <form id="${this.#elementId}" action="">
               <div class="form-group mb-2">
                   <input required name="name" type="text" placeholder="Nome" class="form-control">
               </div>

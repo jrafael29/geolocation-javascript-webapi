@@ -1,8 +1,10 @@
 import { leafletMap } from "/shared/components/map/LeafletMap.js";
-import { FormAddLocation } from "/shared/components/on-map/FormAddLocation.js";
+import { FormAddLocation } from "/shared/components/on-map/children/FormAddLocation.js";
 import { TopRightSectionComponent } from "/shared/components/on-map/TopRightSectionComponent.js";
 import { storagedKeys } from "/shared/storagedKeys.js";
 import { socketPrivateConnection } from "/shared/socketClient.js";
+import { BottomRightSectionComponent } from "/shared/components/on-map/BottomRightSectionComponent.js";
+import { ListUserLocation } from "../../shared/components/on-map/children/ListUserLocation.js";
 
 function mapInit({ lat, lng }) {
   leafletMap.init({ lat, lng, viewZoom: 15 });
@@ -40,8 +42,30 @@ async function mainMapPageScript() {
 
   const token = localStorage.getItem("token");
   // start websocket connection
-  socketPrivateConnection({
+  const socket = socketPrivateConnection({
     token: token,
+  });
+  socket.emit("user-join", {
+    identifier: "HEHE",
+    lat: userLocation.lat,
+    lng: userLocation.lng,
+  });
+  socket.on("disconnect", () => {
+    socket.emit("user-left", true);
+  });
+
+  // document.getElementById("test").addEventListener("click", () => {
+  //   console.log("clicked");
+  //   socket.emit("user-join", {
+  //     identifier: "HEHE",
+  //     lat: userLocation.lat,
+  //     lng: userLocation.lng,
+  //   });
+  // });
+
+  socket.on("users-location", (users) => {
+    console.log("users location", users);
+    new BottomRightSectionComponent(new ListUserLocation(users));
   });
 
   // console.log("map page init", token);

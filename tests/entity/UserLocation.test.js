@@ -1,11 +1,11 @@
 import assert from "node:assert";
 import test from "node:test";
-import { ServiceLocation as ServiceLocationEntity } from "../../src/domain/entity/ServiceLocation.js";
+import { UserLocation as UserLocationEntity } from "../../src/domain/entity/UserLocation.js";
 
 test("deveria lançar erro ao tentar criar uma entidade com parametros inválidos", () => {
   assert.throws(
     () => {
-      new ServiceLocationEntity({
+      new UserLocationEntity({
         lat: "",
         lng: "",
         identifier: "",
@@ -19,7 +19,7 @@ test("deveria lançar erro ao tentar criar uma entidade com parametros inválido
 
   assert.throws(
     () => {
-      new ServiceLocationEntity({
+      new UserLocationEntity({
         lat: "123",
         lng: "",
         identifier: "",
@@ -33,7 +33,7 @@ test("deveria lançar erro ao tentar criar uma entidade com parametros inválido
 
   assert.throws(
     () => {
-      new ServiceLocationEntity({
+      new UserLocationEntity({
         lat: "123",
         lng: "123",
         identifier: "",
@@ -47,7 +47,7 @@ test("deveria lançar erro ao tentar criar uma entidade com parametros inválido
 
   assert.throws(
     () => {
-      new ServiceLocationEntity({
+      new UserLocationEntity({
         lat: "123",
         lng: "123",
         identifier: "123",
@@ -60,7 +60,7 @@ test("deveria lançar erro ao tentar criar uma entidade com parametros inválido
   );
 
   // assert.doesNotThrow(() => {
-  //   new ServiceLocationEntity({
+  //   new UserLocationEntity({
   //     lat: -8.231,
   //     lng: -35.765,
   //     identifier: "kakren",
