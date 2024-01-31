@@ -40,6 +40,10 @@ async function mainMapPageScript() {
   );
   clearStorage();
   const userLocation = JSON.parse(localStorage.getItem("userLocation"));
+  if (!userLocation) {
+    console.log("userLocation", userLocation);
+    throw new Error("ocorreu um erro");
+  }
   mapInit(userLocation);
   new TopRightSectionComponent(new FormAddLocation());
 
