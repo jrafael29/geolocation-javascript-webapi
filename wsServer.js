@@ -1,8 +1,8 @@
-import { Server } from "socket.io";
-import { httpServer } from "./httpServer.js";
 import { onConnection, onDisconnect } from "./src/wsEvents.js";
 import { redisConnection } from "./src/infra/database/redis.js";
 
+import { Server } from "socket.io";
+import { httpServer } from "./httpServer.js";
 export const io = new Server(httpServer);
 
 // midleware
