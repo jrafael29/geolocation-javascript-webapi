@@ -39,11 +39,11 @@ async function mainMapPageScript() {
     localStorage.getItem(storagedKeys.userIdentifier)
   );
   const userLocation = JSON.parse(localStorage.getItem("userLocation"));
-  clearStorage();
   if (!userLocation) {
     console.log("userLocation", userLocation);
     throw new Error("ocorreu um erro");
   }
+  clearStorage();
   mapInit(userLocation);
   new TopRightSectionComponent(new FormAddLocation());
 
