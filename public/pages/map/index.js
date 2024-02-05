@@ -141,6 +141,7 @@ async function mainMapPageScript() {
               ...actualWatchedLocation,
               identifier,
             });
+            leafletMap.updateSelfMarker({ lat: latitude, lng: longitude });
           }
         } else {
           // If no saved location exists
@@ -148,6 +149,9 @@ async function mainMapPageScript() {
             ...actualWatchedLocation,
             identifier,
           });
+          leafletMap.updateSelfMarker({ lat: latitude, lng: longitude });
+
+          // update self location
         }
         localStorage.setItem(
           storagedKeys.lastWatchedLocation,
