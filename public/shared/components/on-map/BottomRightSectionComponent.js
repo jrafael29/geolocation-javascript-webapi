@@ -8,7 +8,7 @@ export class BottomRightSectionComponent {
 
     this.#childComponent = childComponentInstance;
     this.#mount(this.#childComponent.nodeElement());
-    // this.#childComponent.listeners();
+    this.#childComponent.init();
   }
 
   addContent(node) {

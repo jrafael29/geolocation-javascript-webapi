@@ -20,7 +20,6 @@ export class RegisterServiceLocationUseCase {
     };
     const userLocation = locationFactory(data);
     const saveRedisMemberUseCase = new SaveRedisMemberUseCase(this.#repository);
-    await saveRedisMemberUseCase.perform(userLocation);
-    return true;
+    return await saveRedisMemberUseCase.perform(userLocation);
   }
 }

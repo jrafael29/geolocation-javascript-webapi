@@ -8,11 +8,13 @@ function formatGeoMembers(members = [], key) {
     const memberDistance = member[1];
     const memberLatLng = member[2]; // [lng, lat]
 
+    const [lng, lat] = memberLatLng.map((item) => parseFloat(item).toFixed(5));
+
     return {
       identifier: memberName,
       distance: memberDistance,
-      lat: memberLatLng[1],
-      lng: memberLatLng[0],
+      lat,
+      lng,
       type: key,
     };
   });

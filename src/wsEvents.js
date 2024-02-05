@@ -6,15 +6,50 @@ import { GetUserLocationUseCase } from "./application/usecase/GetUserLocationUse
 const EVENTS_NAME = {
   updateUserLocation: "update-user-location",
   usersLocation: "users-location",
-  userJoin: "user-join",
-  userLeft: "user-left",
+
+  // cada usuario irá emitir pro servidor:
+  userJoin: "user-join", // ao entrar
+  userLeft: "user-left", // ao sair
+  userMove: "user-move", // ao movimentar
+
+  // o servidor irá emitir para todos os usuarios:
+  userJoined: "user-joined", // quando um usuario entrar
+  userLefted: "user-lefted", // quando um usuario sair
+  userMoved: "user-moved", // quando um usuario se movimentar
 };
 
+{
+  function onUserJoin(data) {
+    const { lat, lng, identifier } = data;
+    if (!lat || !lng || !identifier) {
+      // on error, event 'error' catch it:
+      throw new Error("invalid parameters");
+    }
+    // receber informações do usuario
+    emit("user-joined", data);
+  }
+  function onUserLeft() {
+    // receber informações do usuario
+    emit("user-lefted");
+  }
+  function onUserMove() {
+    // receber informações do usuario (nova localização)
+    emit("user-moved");
+  }
+}
+
+// quando um usuario se conectar
 export function onConnection(io, socket) {
   console.log("nova conexao", socket.id);
   socket.on(EVENTS_NAME.updateUserLocation, onUpdateUserLocation);
 
+  // listener: quando um usuario entrar
   socket.on(EVENTS_NAME.userJoin, (data) => onUserJoin(io, socket, data));
+  socket.on(EVENTS_NAME.userMove, (data) => {
+    socket.broadcast.emit(EVENTS_NAME.userMoved, data);
+  });
+
+  // listener: quando um usuario sair
   socket.on(EVENTS_NAME.userLeft, (data) => onUserLeft(io, socket, data));
   socket.on(EVENTS_NAME.usersLocation, (data) =>
     onUsersLocation(io, socket, data)
@@ -23,10 +58,10 @@ export function onConnection(io, socket) {
 }
 
 export async function onDisconnect(io, socket) {
-  io.emit("user-left", { message: true });
+  const user = socket.user;
+  // emit to all connections:
+  io.emit("user-lefted", user);
   const token = socket.handshake.auth?.token;
-  console.log("desconectou", token);
-
   const redisRepository = new RedisRepository(redisConnection);
   await redisRepository.removeToken(token);
   await redisRepository.removeMember({
@@ -41,7 +76,7 @@ function onUpdateUserLocation(data) {
 
 async function onUserJoin(io, socket, data) {
   console.log("new user joined", data);
-
+  socket.user = data;
   // get users
   const redisRepository = new RedisRepository(redisConnection);
   const usersLocation = await new GetUserLocationUseCase(
@@ -50,13 +85,13 @@ async function onUserJoin(io, socket, data) {
     lat: data.lat,
     lng: data.lng,
   });
-  console.log("usersLocation", usersLocation);
-
-  io.emit(EVENTS_NAME.usersLocation, usersLocation);
+  socket.broadcast.emit(EVENTS_NAME.userJoined, { ...data, type: "user" });
+  // console.log("usersLocation", usersLocation);
+  socket.emit(EVENTS_NAME.usersLocation, usersLocation);
 }
 
 async function onUserLeft(io, socket, data) {
-  console.log("user left", data);
+  console.log("user left", socket.user);
 
   const redisRepository = new RedisRepository(redisConnection);
   const usersLocation = await new GetUserLocationUseCase(

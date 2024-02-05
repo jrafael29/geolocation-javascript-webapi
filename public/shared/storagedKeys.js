@@ -3,4 +3,6 @@ export const storagedKeys = {
   userIdentifier: "user-identifier",
   otherLocationLat: "other-location-lat",
   otherLocationLng: "other-location-lng",
+  token: "token",
+  lastWatchedLocation: "user-last-watched-location",
 };

@@ -25,7 +25,7 @@ async function registerUserLocation({ identifier, lat, lng }) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      identifier,
+      identifier: identifier.trim(),
       lat,
       lng,
     }),
@@ -35,7 +35,7 @@ async function registerUserLocation({ identifier, lat, lng }) {
   const { data } = await response.json();
   console.log("data", data);
   if (data.redirect) {
-    localStorage.setItem("token", data.token);
+    localStorage.setItem(storagedKeys.token, data.token);
     window.location.href = data.location;
   }
 }

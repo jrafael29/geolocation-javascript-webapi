@@ -93,7 +93,7 @@ export class FormAddLocation {
 
   #html() {
     let html = `
-        <div>
+        <div class="p-2">
           <h6>Cadastre uma localização proximo a você</h4>
           <hr>
           <form id="${this.#elementId}" action="">
