@@ -12,7 +12,7 @@ export const leafletMap = new (class LeafletMap {
   #selfMarker;
   #draggableMarker;
   #userGroup;
-  #userMarkers = {};
+  #userMarkers = [];
   constructor(L) {
     this.#L = L;
   }
@@ -36,7 +36,9 @@ export const leafletMap = new (class LeafletMap {
       .addTo(this.#userGroup)
       .bindPopup(text);
 
-    this.#userMarkers[text] = marker;
+    let markerObj = {};
+    markerObj[text] = marker;
+    this.#userMarkers.push(markerObj);
   }
 
   updateUserMarker({ lat, lng, identifier }) {
@@ -45,8 +47,19 @@ export const leafletMap = new (class LeafletMap {
   }
 
   removeUserMarker({ identifier }) {
-    const marker = this.#userMarkers[identifier];
-    if (marker) this.#userGroup.removeLayer(marker);
+    const markerIndex = this.#userMarkers.findIndex((marker) => {
+      const [key, value] = Object.entries(marker)[0];
+      console.log("key value", { key, value });
+      return key === identifier;
+    });
+
+    console.log("markerToRemove");
+
+    if (markerIndex !== -1) {
+      const markerToRemove = Object.values(this.#userMarkers[markerIndex])[0];
+      this.#userGroup.removeLayer(markerToRemove);
+      this.#userMarkers.splice(markerIndex, 1);
+    }
   }
 
   addSelfMarker({ lat, lng, identifier }) {
@@ -56,9 +69,9 @@ export const leafletMap = new (class LeafletMap {
       .bindPopup(`Você está aqui, ${identifier}`)
       .openPopup();
   }
-  updateSelfMarker({ lat, lng }) {
+  updateSelfMarker({ lat, lng, identifier }) {
     this.#featureGroup.removeLayer(this.#selfMarker);
-    this.addSelfMarker({ lat, lng });
+    this.addSelfMarker({ lat, lng, identifier });
   }
 
   addDraggableMarker({ lat, lng, cbDragend }) {
