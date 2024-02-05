@@ -1,8 +1,8 @@
 import { io } from "https://cdn.socket.io/4.7.4/socket.io.esm.min.js";
 
 export function socketPrivateConnection({ token }) {
-  // const wsHost = "wss://test.joserafael.dev.br";
-  const wsHost = "ws://localhost";
+  const wsHost = "wss://test.joserafael.dev.br";
+  // const wsHost = "ws://localhost";
   const socket = io(wsHost, {
     transports: ["websocket"],
     auth: {
