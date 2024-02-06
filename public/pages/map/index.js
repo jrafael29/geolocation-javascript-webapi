@@ -4,8 +4,8 @@ import { TopRightSectionComponent } from "/shared/components/on-map/TopRightSect
 import { storagedKeys } from "/shared/storagedKeys.js";
 import { socketPrivateConnection } from "/shared/socketClient.js";
 import { BottomRightSectionComponent } from "/shared/components/on-map/BottomRightSectionComponent.js";
-import { ListUserLocation } from "../../shared/components/on-map/children/ListUserLocation.js";
-
+import { ListUserLocation } from "/shared/components/on-map/children/ListUserLocation.js";
+import { ChatContainer } from "/shared/components/on-map/children/ChatContainer.js";
 import { watchLocation } from "/shared/location.js";
 
 const listUsersComponent = new ListUserLocation([]);
@@ -106,9 +106,6 @@ async function mainMapPageScript() {
     // inicializa o mapa
     mapInit({ lat, lng });
 
-    // inicializa o componente superior-direito
-    // new TopRightSectionComponent(new FormAddLocation());
-
     new BottomRightSectionComponent(listUsersComponent);
 
     // start websocket connection
@@ -177,6 +174,18 @@ async function mainMapPageScript() {
       }
     );
 
+    // inicializa o componente superior-direito
+    const chatContainer = new ChatContainer({
+      socket,
+      userIdentifier: identifier,
+    });
+
+    new TopRightSectionComponent(chatContainer);
+
+    // chatContainer.newMessage({ from: "Fulano", message: "Oi hehehe" });
+    // chatContainer.newMessage({ from: "Você", message: "Eae", self: true });
+    // chatContainer.newMessage({ from: "Fulano", message: "Beleza?" });
+
     // "avisa" que o usuario entrou.
     socket.emit("user-join", {
       identifier: identifier,
@@ -227,6 +236,12 @@ async function mainMapPageScript() {
         lng,
         identifier,
       });
+    });
+
+    socket.on("new-message", (messageData) => {
+      console.log("nova mensagem", messageData);
+      const { id, sender, message, date } = messageData;
+      chatContainer.newMessage({ from: sender, message });
     });
 
     socket.on("users-location", (users) => {

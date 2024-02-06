@@ -19,13 +19,17 @@ export class FormAddLocation {
     return divNode;
   }
 
-  listeners() {
+  init() {
     this.#elementHTML = document.getElementById(this.#elementId);
 
     if (!this.#elementHTML)
       throw new Error(
         "you must be instance a object after call listeners registration"
       );
+    this.#listeners();
+  }
+
+  #listeners() {
     this.#elementHTML.addEventListener("submit", this.#onSubmit.bind(this));
 
     document

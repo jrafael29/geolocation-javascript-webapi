@@ -3,6 +3,8 @@ import { getIdentifierFromToken } from "./utils/index.js";
 import { RedisRepository } from "./infra/repository/RedisRepository.js";
 import { GetUserLocationUseCase } from "./application/usecase/GetUserLocationUseCase.js";
 
+import crypto from "node:crypto";
+
 const EVENTS_NAME = {
   updateUserLocation: "update-user-location",
   usersLocation: "users-location",
@@ -11,11 +13,13 @@ const EVENTS_NAME = {
   userJoin: "user-join", // ao entrar
   userLeft: "user-left", // ao sair
   userMove: "user-move", // ao movimentar
+  userSendMessage: "user-send-message", // ao enviar uma mensagem
 
-  // o servidor irá emitir para todos os usuarios:
+  // o servidor irá emitir para todos os usuarios:313
   userJoined: "user-joined", // quando um usuario entrar
   userLefted: "user-lefted", // quando um usuario sair
   userMoved: "user-moved", // quando um usuario se movimentar
+  newMessage: "new-message", // quando um usuario enviar uma mensagem
 };
 
 {
@@ -54,7 +58,29 @@ export function onConnection(io, socket) {
   socket.on(EVENTS_NAME.usersLocation, (data) =>
     onUsersLocation(io, socket, data)
   );
+
+  // listener: quando um usuario enviar uma mensagem
+  socket.on(EVENTS_NAME.userSendMessage, (data) =>
+    onSendMessage(io, socket, data)
+  );
+
   socket.on("disconnect", () => onDisconnect(io, socket));
+}
+
+function onSendMessage(io, socket, data) {
+  // usuario enviou uma nova mensagem
+  console.log("nova message", data);
+
+  const { sender, message } = data;
+  const newMessage = {
+    id: crypto.randomUUID(),
+    sender,
+    message,
+    date: new Date(),
+  };
+  console.log("usuario enviou uma mensagem", newMessage);
+
+  socket.broadcast.emit(EVENTS_NAME.newMessage, newMessage);
 }
 
 export async function onDisconnect(io, socket) {
